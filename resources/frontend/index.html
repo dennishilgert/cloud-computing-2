@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10" crossorigin="anonymous"></script>
+    <style>
+        /* Custom styling to get closer to DeepL's separator style */
+        .text-area-container {
+            background-color: #1e293b; /* Darker shade for contrast */
+            border: 1px solid #334155; /* Border color to match DeepL's style */
+        }
+        .text-area:first-child {
+            border-right: 2px solid #334155; /* Separator line between text areas */
+        }
+        @media (max-width: 768px) {
+            .text-area:first-child {
+                border-right: none;
+                border-bottom: 2px solid #334155; /* Adjust separator for responsive design */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-800 text-gray-300">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-gray-700 p-4 rounded-t-lg flex justify-between items-center">
+            <select id="sourceLang" name="sourceLang" class="bg-gray-600 text-white rounded px-4 py-2 focus:outline-none" hx-post="/languages" hx-include="#targetLang" hx-vals='{"element": "sourceLang"}' hx-trigger="load, change from:#targetLang" hx-target="#sourceLang" hx-swap="innerHTML">
+                <!-- Dynamically loaded options -->
+                <option>German</option>
+            </select>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none" hx-post="/translate" hx-include="#sourceLang, #targetLang, #sourceText" hx-trigger="click, keyup[keyCode==13] from:body" hx-target="#translatedText" hx-swap="innerHTML">
+                Translate
+            </button>
+            <select id="targetLang" name="targetLang" class="bg-gray-600 text-white rounded px-4 py-2 focus:outline-none" hx-post="/languages" hx-include="#sourceLang" hx-vals='{"element": "targetLang"}' hx-trigger="load, change from:#sourceLang" hx-target="#targetLang" hx-swap="innerHTML">
+                <!-- Options should be dynamically loaded based on the first select -->
+                <option>English</option>
+            </select>
+        </div>
+        <div class="flex flex-col md:flex-row text-area-container rounded-b-lg overflow-hidden">
+            <textarea id="sourceText" name="sourceText" class="text-area bg-gray-600 text-white flex-1 p-4 h-64 resize-none focus:ring-2 focus:ring-blue-500" placeholder="Enter text..."></textarea>
+            <textarea id="translatedText" class="text-area bg-gray-600 text-white flex-1 p-4 h-64 resize-none focus:ring-2 focus:ring-blue-500" readonly placeholder="Translation..."></textarea>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    // prevent textarea from inserting a new line when pressing the enter key
+    document.getElementById("sourceText").addEventListener("keydown", (event) => {
+        if (event.keyCode == 13 && !event.shiftKey) {
+            event.preventDefault()
+        }
+    })
+</script>
