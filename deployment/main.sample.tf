@@ -41,6 +41,7 @@ resource "google_compute_instance" "gcp-vm2" {
   machine_type = "e2-micro"
 
   metadata = {
+    # This has to be the public ssh key of gcp-vm1
     ssh-keys = "<<<SSH-KEY>>>"
   }
 
