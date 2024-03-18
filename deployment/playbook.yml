@@ -15,13 +15,13 @@
         path: "/etc"
         state: directory
 
-    - name: Securely copy Google Cloud credentials to VM
+    - name: Securely copy Google Cloud credentials to the vm
       ansible.builtin.copy:
         src: "{{ credentials_file_path_on_host }}"
         dest: "{{ credentials_file_path_on_vm }}"
         mode: '0400' # Ensures the file is readable by the owner only
 
-    - name: Install git, docker and other necessary packages
+    - name: Install Git, Docker and other necessary packages
       apt:
         name:
           - git
@@ -37,7 +37,7 @@
         clone: yes
         update: yes
 
-    - name: Build the Docker container
+    - name: Build the Docker image
       docker_image:
         build:
           path: "{{ app_directory }}"
