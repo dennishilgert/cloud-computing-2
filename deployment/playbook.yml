@@ -6,8 +6,8 @@
     app_port: "80"
     redis_port: "6379"
     google_cloud_project_id: "cloudcomputingii"
-    credentials_file_path_on_host: "/path/to/your/local/creds.json"
-    credentials_file_path_on_vm: "/etc/creds.json"
+    credentials_file_path_on_host: "../service-account.json"
+    credentials_file_path_on_vm: "/etc/service-account.json"
 
   tasks:
     - name: Ensure directory exists for Google Cloud credentials
@@ -59,6 +59,6 @@
           REDIS_HOST: "{{ redis_host }}"
           REDIS_PORT: "{{ redis_port }}"
           GOOGLE_CLOUD_PROJECT_ID: "{{ google_cloud_project_id }}"
-          GOOGLE_APPLICATION_CREDENTIALS: "/etc/creds.json"
+          GOOGLE_APPLICATION_CREDENTIALS: "/etc/service-account.json"
         volumes:
-          - "{{ credentials_file_path_on_vm }}:/etc/creds.json:ro"
+          - "{{ credentials_file_path_on_vm }}:/etc/service-account.json:ro"
