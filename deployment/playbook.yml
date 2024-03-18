@@ -37,15 +37,10 @@
         clone: yes
         update: yes
 
-    - command: "ls -al {{ app_directory }}"
-      register: dir_out
-
-    - debug: msg="Output {{dir_out.stdout_lines|join(',')}}"
-
     - name: Build the Docker container
       docker_image:
         build:
-          path: "{{ app_directory }}/docker"
+          path: "{{ app_directory }}"
         name: translator-app
         source: build
 

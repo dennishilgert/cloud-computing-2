@@ -3,7 +3,7 @@ FROM golang:1.21.5-bullseye
 WORKDIR /app
 
 # The contents of the /app directory on the host are copied over to the /app directory in the container.
-COPY /app .
+COPY . .
 
 # Download go packages.
 RUN go mod download
