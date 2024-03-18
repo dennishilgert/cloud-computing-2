@@ -1,0 +1,64 @@
+- hosts: all
+  become: true
+  vars:
+    app_repo: "https://github.com/dennishilgert/cloud-computing-2.git"
+    app_directory: "/app"
+    app_port: "80"
+    google_cloud_project_id: "cloudcomputingii"
+    redis_port: "6379"
+    credentials_file_path_on_host: "/path/to/your/local/creds.json"
+    credentials_file_path_on_vm: "/etc/creds.json"
+
+  tasks:
+    - name: Ensure directory exists for Google Cloud credentials
+      ansible.builtin.file:
+        path: "/etc"
+        state: directory
+
+    - name: Securely copy Google Cloud credentials to VM
+      ansible.builtin.copy:
+        src: "{{ credentials_file_path_on_host }}"
+        dest: "{{ credentials_file_path_on_vm }}"
+        mode: '0400' # Ensures the file is readable by the owner only
+
+    - name: Install git, docker and other necessary packages
+      apt:
+        name:
+          - git
+          - docker.io
+          - docker-compose
+        state: present
+        update_cache: yes
+
+    - name: Clone the repository
+      git:
+        repo: "{{ app_repo }}"
+        dest: "{{ app_directory }}"
+        clone: yes
+        update: yes
+
+    - name: Build the Docker container
+      docker_image:
+        build:
+          path: "{{ app_directory }}/docker"
+        name: translator-app
+        source: build
+
+    - name: Run the Docker container
+      docker_container:
+        name: translator-app
+        image: translator-app
+        state: started
+        restart_policy: always
+        exposed_ports:
+          - "80"
+        ports:
+          - "80:80"
+        env:
+          APP_PORT: "{{ app_port }}"
+          GOOGLE_CLOUD_PROJECT_ID: "{{ google_cloud_project_id }}"
+          REDIS_HOST: "{{ redis_host }}"
+          REDIS_PORT: "{{ redis_port }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "/etc/creds.json"
+        volumes:
+          - "{{ credentials_file_path_on_vm }}:/etc/creds.json:ro"
