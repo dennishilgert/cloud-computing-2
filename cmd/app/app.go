@@ -26,7 +26,7 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	log.Infof("starting translator -- version %s", "TO_BE_IMPLEMENTED")
+	log.Infof("starting translator -- version %s", "1.0.0")
 	log.Infof("log level set to: %s", cfg.Logger.OutputLevel)
 
 	ctx := signals.Context()
