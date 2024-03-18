@@ -4,8 +4,8 @@
     app_repo: "https://github.com/dennishilgert/cloud-computing-2.git"
     app_directory: "/app"
     app_port: "80"
-    google_cloud_project_id: "cloudcomputingii"
     redis_port: "6379"
+    google_cloud_project_id: "cloudcomputingii"
     credentials_file_path_on_host: "/path/to/your/local/creds.json"
     credentials_file_path_on_vm: "/etc/creds.json"
 
@@ -56,9 +56,9 @@
           - "80:80"
         env:
           APP_PORT: "{{ app_port }}"
-          GOOGLE_CLOUD_PROJECT_ID: "{{ google_cloud_project_id }}"
           REDIS_HOST: "{{ redis_host }}"
           REDIS_PORT: "{{ redis_port }}"
+          GOOGLE_CLOUD_PROJECT_ID: "{{ google_cloud_project_id }}"
           GOOGLE_APPLICATION_CREDENTIALS: "/etc/creds.json"
         volumes:
           - "{{ credentials_file_path_on_vm }}:/etc/creds.json:ro"
