@@ -77,3 +77,12 @@ resource "google_compute_instance" "gcp-vm2" {
   tags = ["http-server", "https-server"]
   zone = "europe-west1-b"
 }
+
+resource "google_redis_instance" "redis_instance" {
+  name           = "gcp-redis"
+  tier           = "BASIC"
+  memory_size_gb = 1
+  region         = "europe-west1"
+
+  authorized_network = "projects/<<<PROJECT-ID>>>/global/networks/default"
+}
