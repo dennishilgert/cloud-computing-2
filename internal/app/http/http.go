@@ -45,16 +45,16 @@ func NewHttpServer(translator translate.Translator, cache cache.Cache, opts Opti
 	}
 }
 
-// Define a TemplateRenderer struct that holds a template instance
 type TemplateRenderer struct {
 	templates *template.Template
 }
 
-// Implement the Renderer interface from Echo
+// Render renders a template with the given parameters.
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
+// Run starts the http server.
 func (a *httpServer) Run(ctx context.Context) error {
 	if !a.running.CompareAndSwap(false, true) {
 		return errors.New("http server is already running")
@@ -65,8 +65,6 @@ func (a *httpServer) Run(ctx context.Context) error {
 	e := echo.New()
 	e.HideBanner = true
 
-	// Middleware
-	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	// Initialize the template renderer
@@ -75,30 +73,43 @@ func (a *httpServer) Run(ctx context.Context) error {
 	}
 	e.Renderer = renderer
 
+	// return the rendered template to the client
 	e.GET("/", func(c echo.Context) error {
 		// Render the index template with any dynamic data (if necessary)
 		return c.Render(http.StatusOK, "index.html", map[string]interface{}{})
 	})
 
+	//
 	e.POST("/languages", func(c echo.Context) error {
-		values, _ := c.FormParams()
+		values, err := c.FormParams()
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Invalid form data")
+		}
+
 		excludeSelection := values.Get("targetLang")
 		currentSelection := values.Get("sourceLang")
+		// swap current and excluded language if the element that
+		// triggered the request is the target language selection
 		if values.Get("element") == "targetLang" {
-			excludeSelection = values.Get("sourceLang")
-			currentSelection = values.Get("targetLang")
+			excludeSelection, currentSelection = currentSelection, excludeSelection
 		}
-		htmlOut := ""
+
+		var htmlOut strings.Builder
+		// add the current selected language as first and therefore
+		// automatically selected option if it should no be excluded
 		if currentSelection != excludeSelection {
-			htmlOut = fmt.Sprintf("<option>%v</option>", currentSelection)
+			htmlOut.WriteString(fmt.Sprintf("<option>%v</option>", currentSelection))
 		}
+
+		// append each available language except the current and excluded language
 		for _, lang := range a.translator.AvailableLanguages().DisplayNames() {
 			if strings.EqualFold(excludeSelection, lang) || strings.EqualFold(currentSelection, lang) {
 				continue
 			}
-			htmlOut = fmt.Sprintf("%v<option>%v</option>\n", htmlOut, lang)
+			htmlOut.WriteString(fmt.Sprintf("<option>%v</option>\n", lang))
 		}
-		return c.HTML(http.StatusOK, htmlOut)
+
+		return c.HTML(http.StatusOK, htmlOut.String())
 	})
 
 	e.POST("/translate", func(c echo.Context) error {

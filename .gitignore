@@ -22,3 +22,5 @@ go.work
 
 service-account.json
 .env
+
+*main.tf

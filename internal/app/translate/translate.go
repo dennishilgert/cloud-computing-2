@@ -51,10 +51,12 @@ func NewTranslator(ctx context.Context, opts Options) Translator {
 	}
 }
 
+// AvailableLanguages returns an interface to interact with the available languages.
 func (t *translator) AvailableLanguages() AvailableLanguages {
 	return t.availableLanguages
 }
 
+// Translate returns a translation by requesting it at the Google Cloud Translate API.
 func (t *translator) Translate(ctx context.Context, sourceLang string, targetLang string, input string) (*string, error) {
 	req := &translatepb.TranslateTextRequest{
 		Parent:             fmt.Sprintf("projects/%s/locations/global", t.projectId),
@@ -70,6 +72,7 @@ func (t *translator) Translate(ctx context.Context, sourceLang string, targetLan
 	return &resp.GetTranslations()[0].TranslatedText, nil
 }
 
+// Close closes the API client.
 func (t *translator) Close() {
 	t.client.Close()
 }

@@ -21,6 +21,7 @@ type availableLanguages struct {
 	languages map[string]Language
 }
 
+// ParseAvailableLanguages parses the supported languages from Google Cloud.
 func ParseAvailableLanguages(supportedLanguages []*translatepb.SupportedLanguage) AvailableLanguages {
 	languages := map[string]Language{}
 	for _, language := range supportedLanguages {
@@ -34,10 +35,12 @@ func ParseAvailableLanguages(supportedLanguages []*translatepb.SupportedLanguage
 	}
 }
 
+// ByDisplayName returns an available language by its display name.
 func (a *availableLanguages) ByDisplayName(displayName string) Language {
 	return a.languages[strings.ToLower(displayName)]
 }
 
+// DisplayNames returns a list with the display names of all available languages.
 func (a *availableLanguages) DisplayNames() []string {
 	names := make([]string, 0, len(a.languages))
 	for _, lang := range a.languages {
