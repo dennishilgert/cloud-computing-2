@@ -15,9 +15,13 @@ fi
 echo "Removing sample Terraform file ..."
 rm main.sample.tf
 
-# Apply Terraform Configuration
-echo "Initializing Terraform and applying configuration ..."
-terraform init && terraform apply -auto-approve
+# Initializing Terraform
+echo "Initializing Terraform ..."
+terraform init
+
+# Apply Terraform configuration
+echo "Applying Terraform configuration (this can take up to 6 minutes) ..."
+terraform apply -auto-approve
 
 # Get VM IP and Redis IP
 echo "Reading output variables of Terraform execution ..."
@@ -30,7 +34,7 @@ echo "[gcp_vm]" > ansible_inventory
 echo "$VM_IP ansible_user=dennis ansible_ssh_private_key_file=~/.ssh/id_rsa" >> ansible_inventory
 
 # Run Ansible Playbook
-echo "Running Ansible playbook ..."
+echo "Running Ansible playbook (this can take up to 20 minutes) ..."
 ansible-playbook -i ansible_inventory playbook.yml -e redis_host=$REDIS_IP
 
 echo "Deployed."
