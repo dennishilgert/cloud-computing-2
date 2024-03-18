@@ -3,12 +3,12 @@ FROM golang:1.21.5-bullseye
 WORKDIR /app
 
 # Copy the entire project into the container
-COPY . .
+COPY ../. .
 
 # Download dependencies
 RUN go mod download
 
-RUN go build -o translator ./cmd
+RUN go build -o translator ./cmd/main.go
 
 EXPOSE 80
 
