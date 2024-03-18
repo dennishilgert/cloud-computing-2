@@ -2,10 +2,10 @@ FROM golang:1.21.5-bullseye
 
 WORKDIR /app
 
-# Copy the entire project into the container
-COPY ../. .
+# The contents of the /app directory on the host are copied over to the /app directory in the container.
+COPY /app .
 
-# Download dependencies
+# Download go packages.
 RUN go mod download
 
 RUN go build -o translator ./cmd/main.go

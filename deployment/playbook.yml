@@ -37,7 +37,7 @@
         clone: yes
         update: yes
 
-    - command: "ls -al"
+    - command: "ls -al {{ app_directory }}"
       register: dir_out
 
     - debug: msg="Output {{dir_out.stdout_lines|join(',')}}"
